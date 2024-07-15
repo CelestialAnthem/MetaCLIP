@@ -38,6 +38,8 @@ def main(input_dir, balanced_dir, t):
 
     os.makedirs(balanced_dir, exist_ok=True)
     np.save(f"{balanced_dir}/entry_count.npy", entry_count)
+    
+    
 
     entry_count[entry_count < t] = t
     entry_prob = t / entry_count

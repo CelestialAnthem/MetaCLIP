@@ -15,8 +15,14 @@ def count_cumsum_bal(args):
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
     g = sns.lineplot(x=[0], y=[0], linewidth=0)
+    
+    
+    # Load the JSON file
+    with open("%s/entry_counts.json" % args["meta_index_path"], 'r') as f:
+        data = json.load(f)
 
-    word_counts = np.load(f"{args.meta_index_path}/entry_counts.npy")
+    # Convert the data to a numpy array
+    word_counts = np.array(list(data.values()))
     counts = np.sort(word_counts)
 
     cumsum_counts = np.cumsum(counts)
@@ -25,7 +31,7 @@ def count_cumsum_bal(args):
     g = sns.lineplot(x=list(range(len(y))), y=y, linewidth=4)
     plt.text(len(y)*0.95, 1.05*y[-1], r"t=$\infty$", horizontalalignment='left', size=18, color="blue")
 
-    pts = [20000, 90000, 170000]
+    pts = [200, 500, 1000, 2000]
 
     for t in pts:
         _counts = np.array(counts)
@@ -59,9 +65,11 @@ plots = {
 import sys
 sys.path.append("./")
 
-from btm.utils import load_config
-config = load_config(sys.argv[1])
+# from btm.utils import load_config
+# config = load_config(sys.argv[1])
+config = {"meta_index_path": "/mnt/share_disk/LIV/datacomp/metaclip"}
 
 count_cumsum_bal(config)
-plt.savefig(os.path.join("plots", f"{sys.argv[1]}.jpg"))
+plt.savefig(os.path.join("plots", "%s/plot.jpg" % config["meta_index_path"]))
+print(os.path.join("plots", "%s/plot.jpg" % config["meta_index_path"]))
 # plt.savefig(os.path.join("plots/queries", f"{sys.argv[1]}.pdf"))

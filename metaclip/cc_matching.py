@@ -19,6 +19,9 @@ from substr_matching import substr_matching
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
+tag = "_snorkel"
+# METADATA = "metadata.json"
+METADATA = "/root/MetaCLIP/metadata%s.json" % tag
 
 def gen_uuid(url):
     return hashlib.sha224(bytes(url, encoding="utf-8")).hexdigest()[:24]
@@ -286,7 +289,7 @@ def process(cc_file, output_file):
         raise ValueError(f"unknown cc extension {cc_file}")
 
     data = parser.parse(cc_file)
-    with open("metadata.json") as f:
+    with open(METADATA) as f:
         metadata = json.load(f)
     data = parser.substrmatch(data, metadata)
     parser.save_json(output_file, data)
@@ -294,7 +297,7 @@ def process(cc_file, output_file):
 
 def process_new(data, output_file):
     parser = WARCCurator(dedup=True, lid=True)
-    with open("metadata.json") as f:
+    with open(METADATA) as f:
         metadata = json.load(f)
     data = parser.substrmatch(data, metadata, 64)
     parser.save_json(output_file, data)
@@ -321,8 +324,12 @@ def remove_sep(data):
     
 if __name__ == '__main__':
     # data = [{'texts': [['alt', 'Click to enlarge image michel4.jpg']]}, {'texts': [['alt', 'Print this page']]}]
-    data_ori = load_jsonl("/mnt/share_disk/LIV/datacomp/processed_data/880w_1088w_dedup_processed/v0.1/demo-processed.jsonl")
+    DIR = "/mnt/share_disk/LIV/datacomp/processed_data/snorkel/metaclip_3clip_en_ratio_snorkel_top40_0615"
+    
+    # data_ori = load_jsonl("%s/3clip_en_ratio_snorkel_top40_0615.jsonl" % DIR)
+    data_ori = load_jsonl("/mnt/share_disk/LIV/datacomp/processed_data/snorkel/3clip_en_ratio_snorkel_top40_0615.jsonl")
+    
     processed_data = [remove_sep(data) for data in data_ori]
-    output_file = "output.json"
+    output_file = "%s/output%s.json" % (DIR, tag)
     process_new(processed_data, output_file)
     
